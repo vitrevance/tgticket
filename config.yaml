@@ -1,0 +1,8 @@
+# Configuration file for Go access control service
+
+telegram_bot_token: "123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+telegram_chat_id: 1234567890         # Telegram chat ID where notifications will be sent
+admin_user: "admin"                  # Username for admin panel basic authentication
+admin_password: "password123"       # Password for admin panel basic authentication
+server_addr: ":8080"                # Address and port where the server will listen
+public_addr: "http://mypage.com"

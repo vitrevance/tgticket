@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Go Server",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/tgticket",
+      "args": ["-config", "${workspaceFolder}/build/config.yaml"],
+      "env": {},
+      "output": "${workspaceFolder}/build/debug"
+    }
+  ]
+}

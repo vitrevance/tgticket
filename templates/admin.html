@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Админ панель - билеты доступа</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        /* Make the table full width and allow horizontal scroll on small screens */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            overflow-x: auto;
+            display: block;
+            /* Allows horizontal scroll on small screens */
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Flex container for buttons in action cell */
+        td:last-child {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            /* allow wrapping on narrow screens */
+        }
+
+        /* Style buttons and links as buttons */
+        button,
+        a.button {
+            padding: 6px 12px;
+            background: #0078D7;
+            color: white;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover,
+        a.button:hover {
+            background: #005A9E;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 600px) {
+            body {
+                padding: 0.5rem;
+                margin: 1rem;
+                max-width: 100%;
+            }
+
+            /* Let table container scroll horizontally */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            /* Stack buttons vertically in action cell for narrow screens */
+            td:last-child {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            button,
+            a.button {
+                width: 100%;
+                font-size: 1rem;
+                padding: 10px;
+                text-align: center;
+                white-space: normal;
+                /* allow button text to wrap */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Админ панель - билеты доступа</h1>
+    <form action="/admin/ticket/new" method="POST" style="margin-bottom:1rem;">
+        <button type="submit">Выдать новый билет (6 часов)</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Уникальный токен</th>
+                <th>URL</th>
+                <th>Истекает в</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Tickets}}
+            <tr>
+                <td>{{.Token}}</td>
+                <td><a href="{{$.PublicAddress}}/control/{{.Token}}"
+                        target="_blank">{{$.PublicAddress}}/control/{{.Token}}</a></td>
+                <td>{{formatTime .ExpireAt}}</td>
+                <td>
+                    <a class="button" href="/admin/ticket/prolong?token={{.Token}}">Продлить</a>
+                    <a class="button" href="/admin/ticket/revoke?token={{.Token}}">Отозвать</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="4">Активных билетов нет</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</body>
+
+</html>
