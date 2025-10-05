@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -122,19 +121,8 @@ func (s *Server) handleControlPost(w http.ResponseWriter, r *http.Request, token
 	}()
 
 	// Confirmation page inline
-	const confPage = `
-<!DOCTYPE html>
-<html lang="ru">
-<head><meta charset="UTF-8" /><title>Открытие начато</title></head>
-<body>
-<h1>Открытие шлагбаума</h1>
-<p>Сигнал отправлен. Ожидайте 10-30 секунд.</p>
-<p><a href="">Вернуться</a></p>
-</body>
-</html>
-`
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	io.WriteString(w, confPage)
+	s.tmpl.ExecuteTemplate(w, "wait.html", nil)
 }
 
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
