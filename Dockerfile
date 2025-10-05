@@ -10,6 +10,9 @@ RUN CGO_ENABLED=0 go build -o /tgticket ./cmd/tgticket
 
 FROM scratch
 
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder /etc/ssl/certs /etc/ssl/certs
+
 COPY --from=builder /tgticket /tgticket
 
 ENTRYPOINT ["/tgticket"]
