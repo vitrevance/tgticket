@@ -31,10 +31,12 @@ func (s *Server) RegisterRoutes() {
 	if err != nil {
 		log.Fatal("Failed to parse templates", err)
 	}
-	http.HandleFunc("/admin", s.basicAuth(s.adminHandler))
-	http.HandleFunc("/admin/ticket/new", s.basicAuth(s.newTicketHandler))
-	http.HandleFunc("/admin/ticket/prolong", s.basicAuth(s.prolongTicketHandler))
-	http.HandleFunc("/admin/ticket/revoke", s.basicAuth(s.revokeTicketHandler))
+	http.HandleFunc("/login", s.loginHandler)
+	http.HandleFunc("/logout", s.logoutHandler)
+	http.Handle("/admin/", s.authMiddleware(http.HandlerFunc(s.adminHandler)))
+	http.Handle("/admin/ticket/new", s.authMiddleware(http.HandlerFunc(s.newTicketHandler)))
+	http.Handle("/admin/ticket/prolong", s.authMiddleware(http.HandlerFunc(s.prolongTicketHandler)))
+	http.Handle("/admin/ticket/revoke", s.authMiddleware(http.HandlerFunc(s.revokeTicketHandler)))
 	http.HandleFunc("/control/", s.controlHandler)
 }
 

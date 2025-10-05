@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/vitrevance/tgticket/internal/ticket"
@@ -74,13 +75,6 @@ func (s *Server) controlHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, ok := s.tstore.Get(token)
 	if !ok || t.ExpireAt.Before(time.Now()) {
-		// Ticket expired - show expired ticket page
-		if s.tmpl == nil {
-			if err := s.parseTemplates(); err != nil {
-				http.Error(w, "Template error", http.StatusInternalServerError)
-				return
-			}
-		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		err := s.tmpl.ExecuteTemplate(w, "expired.html", nil)
 		if err != nil {
@@ -141,4 +135,44 @@ func (s *Server) handleControlPost(w http.ResponseWriter, r *http.Request, token
 `
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	io.WriteString(w, confPage)
+}
+
+func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		s.renderLogin(w, "")
+		return
+	}
+	if r.Method == http.MethodPost {
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+		if username == s.cfg.AdminUser && password == s.cfg.AdminPassword {
+			// Set session cookie (for simplicity, setting a dummy session)
+			http.SetCookie(w, &http.Cookie{
+				Name:     "session",
+				Value:    "authenticated",
+				Path:     "/",
+				HttpOnly: true,
+				Secure:   strings.HasPrefix(s.cfg.PublicAddr, "https://"), // set true with HTTPS
+				MaxAge:   3600,
+			})
+			http.Redirect(w, r, "/admin", http.StatusSeeOther)
+			return
+		}
+		s.renderLogin(w, "Неверный логин или пароль")
+	}
+}
+
+func (s *Server) renderLogin(w http.ResponseWriter, errorMsg string) {
+	s.tmpl.ExecuteTemplate(w, "login.html", &struct{ Error string }{Error: errorMsg})
+}
+
+func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Clear session
+	http.SetCookie(w, &http.Cookie{
+		Name:   "session",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }

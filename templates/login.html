@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Авторизация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 1rem;
+        }
+
+        input {
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        button {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            font-size: 1rem;
+            background-color: #0078D7;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #005A9E;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Вход в админ-панель</h1>
+    <form method="POST" action="/login">
+        <label for="username">Имя пользователя</label>
+        <input type="text" id="username" name="username" required />
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" required />
+        <button type="submit">Войти</button>
+    </form>
+    {{if .Error}}
+    <p style="color:red;">{{.Error}}</p>
+    {{end}}
+</body>
+
+</html>
